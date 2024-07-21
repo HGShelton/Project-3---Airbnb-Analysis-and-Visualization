@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <title>Boston Airbnb</title>
+  <head>
+    <meta charset="UTF-8">
+    <title>Boston Airbnb</title>
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin="" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  <!-- Leaflet JavaScript code -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
+    <!-- Leaflet JavaScript code -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-  <!-- Our CSS -->
-  <link rel="stylesheet" type="text/css" href="style.css">
-</head>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 
-<body>
-  <!-- The div where we'll insert our map -->
-  <div id="map"></div>
+    <!-- Our CSS  -->
+    <link rel="stylesheet" href="style.css" />
 
-  <!-- JavaScript file -->
-  <script type="text/javascript" src="logic.js"></script>
-</body>
+  </head>
+
+  <body>
+    <div id="map" style="height: 400px;"></div>
+
+    <!-- JavaScript file -->
+    <script type="text/javascript" src="logic.js"></script>
+  </body>
 
 </html>

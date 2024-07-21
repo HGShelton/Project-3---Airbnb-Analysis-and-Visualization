@@ -10,6 +10,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(myMap);
 
 // Call data
-d3.json(info).then(function (data) {
-    L.geoJson(data.addTo(myMap));
-})
+d3.json("listings.json").then(function (data) {
+    console.log("Data loaded:", data);
+
+    data.forEach(function (listing) {
+        console.log("Latitude:", listing.latitiude, "Longitude:", listing.longitude);
+        L.marker([listing.latitude, listing.longitude]).addTo(myMap);
+    });
+});
