@@ -1,4 +1,3 @@
-
 // Creating the map object
 let myMap = L.map("map", {
     center: [42.36413, -71.02991],
@@ -61,6 +60,9 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             neighbourhoodSelect.appendChild(option);
         }
 
+        let geoJsonLayer;
+        let previousHighlight = null;
+
         // Create the choropleth layer manually
         function getColor(d) {
             return d > 450 ? '#800026' :
@@ -77,8 +79,6 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             let neighbourhood = feature.properties.neighbourhood;  
             let avgPrice = avgPriceByNeighbourhood[neighbourhood] || 0; // Default to 0 if no data
             
-            console.log('Neighbourhood:', neighbourhood, 'Average Price:', avgPrice);
-
             return {
                 fillColor: getColor(avgPrice),
                 weight: 2,
@@ -89,34 +89,68 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             };
         }
 
-        L.geoJson(neighbourhoodsData, {
+        function resetHighlight() {
+            geoJsonLayer.eachLayer(layer => {
+                if (layer.feature.properties.neighbourhood === previousHighlight) {
+                    let avgPrice = avgPriceByNeighbourhood[previousHighlight] || 0;
+                    layer.setStyle({
+                        fillColor: getColor(avgPrice),
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    });
+                } else {
+                    layer.setStyle(style(layer.feature));
+                }
+            });
+        }
+
+        function highlightFeature(e) {
+            let layer = e.target;
+            layer.setStyle({
+                weight: 5,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+        }
+
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight
+            });
+            let neighbourhood = feature.properties.neighbourhood;  
+            let avgPrice = avgPriceByNeighbourhood[neighbourhood] || 'No data';
+            layer.bindPopup(`<strong>Neighbourhood: ${neighbourhood}</strong><br>Average Price: $${avgPrice}`);
+        }
+
+        geoJsonLayer = L.geoJson(neighbourhoodsData, {
             style: style,
-            onEachFeature: function(feature, layer) {
-                let neighbourhood = feature.properties.neighbourhood;  
-                let avgPrice = avgPriceByNeighbourhood[neighbourhood] || 'No data';
-                layer.bindPopup(`<strong>Neighbourhood: ${neighbourhood}</strong><br>Average Price: $${avgPrice}`);
-            }
+            onEachFeature: onEachFeature
         }).addTo(myMap);
 
         // Set up the legend
         let legend = L.control({ position: "bottomright" });
         legend.onAdd = function() {
-            let div = L.DomUtil.create("div", "info legend"),
-                grades = [0, 100, 150, 200, 250, 300, 350, 450],
-                labels = [];
+            let div = L.DomUtil.create("div", "info legend");
+            div.style.backgroundColor = "white"; 
+            div.style.padding = "10px";    
 
-            // Add the minimum and maximum.
-            let legendInfo = "<h1>Average Price</h1>" +
-                "<div class=\"labels\">" +
-                    "<div class=\"min\">" + grades[0] + "</div>" +
-                    "<div class=\"max\">" + grades[grades.length - 1] + "</div>" +
-                "</div>";
+            // Add the title
+            div.innerHTML = "<h4>Average Nightly Price</h4>";
 
-            div.innerHTML = legendInfo;
+            // Define the grades and their labels
+            let grades = [0, 100, 150, 200, 250, 300, 350, 450];
 
+            // Add the color ranges with sample colors
             grades.forEach(function(grade, index) {
+                // Generate a sample color for each range
+                let color = getColor(grade + 1);
                 div.innerHTML +=
-                    '<i style="background:' + getColor(grade + 1) + '"></i> ' +
+                    '<i style="background:' + color + '; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ' +
                     grade + (grades[index + 1] ? '&ndash;' + grades[index + 1] + '<br>' : '+');
             });
 
@@ -129,10 +163,28 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
         neighbourhoodSelect.addEventListener('change', function() {
             let selectedNeighbourhood = this.value;
             let selectedFeature = neighbourhoodsData.features.find(
-                feature => feature.neighbourhood === selectedNeighbourhood  // Adjust this line if the property name is different
+                feature => feature.properties.neighbourhood === selectedNeighbourhood
             );
+
             if (selectedFeature) {
-                myMap.fitBounds(L.geoJSON(selectedFeature).getBounds());
+                let bounds = L.geoJSON(selectedFeature).getBounds();
+                myMap.fitBounds(bounds);
+
+                // Reset previously highlighted feature and highlight new one
+                resetHighlight();
+                previousHighlight = selectedNeighbourhood;
+                geoJsonLayer.eachLayer(layer => {
+                    if (layer.feature.properties.neighbourhood === selectedNeighbourhood) {
+                        let avgPrice = avgPriceByNeighbourhood[selectedNeighbourhood] || 0;
+                        layer.setStyle({
+                            fillColor: getColor(avgPrice),
+                            weight: 5,
+                            color: '#666',
+                            dashArray: '',
+                            fillOpacity: 0.7
+                        });
+                    }
+                });
             }
         });
     }).catch(error => console.error('Error loading listings data:', error));
