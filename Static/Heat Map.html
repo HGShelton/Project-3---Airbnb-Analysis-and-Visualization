@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Heat Map with D3 Data</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 655px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+        let myMap = L.map("map", {
+            center: [42.3601, -71.0589],
+            zoom: 10
+        });
+
+        // Add a tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(myMap);
+
+        // Call data
+        d3.json("listings.json").then(function (data) {
+            console.log("Data loaded:", data);
+
+            // Prepare heat map data
+            let heatData = data.map(function (listing) {
+                return [listing.latitude, listing.longitude];
+            });
+
+            // Create heat map layer
+            L.heatLayer(heatData, {
+                radius: 25,  // Adjust the radius as needed
+                blur: 15,    // Adjust the blur intensity as needed
+                maxZoom: 17, // Adjust the max zoom level as needed
+            }).addTo(myMap);
+        }).catch(function(error) {
+            console.error("Error loading the data:", error);
+        });
+    </script>
+</body>
+</html>
+
