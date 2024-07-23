@@ -10,9 +10,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-// Create layer groups
-let accommodates = L.layerGroup();
-let price = L.layerGroup();
+// Create layer groups for accommodation values
+let accommodates1to3 = L.layerGroup();
+let accommodates4to6 = L.layerGroup();
+let accommodates7plus = L.layerGroup();
+
+// Create layer groups for price range values
+let price0to150 = L.layerGroup();
+let price151to300 = L.layerGroup();
+let price301to550 = L.layerGroup();
+let price551to1000 = L.layerGroup();
+let price1000plus = L.layerGroup();
 
 // Call data
 d3.json("listings.json").then(function (data) {
@@ -28,7 +36,7 @@ d3.json("listings.json").then(function (data) {
         radius: 25,  // Adjust the radius as needed
         blur: 15,    // Adjust the blur intensity as needed
         maxZoom: 17, // Adjust the max zoom level as needed
-    }).addTo(myMap);
+    })
 
     // Create a MarkerClusterGroup
     let markers = L.markerClusterGroup();
@@ -45,57 +53,93 @@ d3.json("listings.json").then(function (data) {
 
         // Determine accommodates value and add marker to accommodates group
         let value = listing.accommodates;
+        
         if (value >= 1 && value <= 3) {
-            marker.addTo(accommodates);
+            marker.addTo(accommodates1to3);
         } else if (value >= 4 && value <= 6) {
-            marker.addTo(accommodates);
+            marker.addTo(accommodates4to6);
         } else {
-            marker.addTo(accommodates);
+            marker.addTo(accommodates7plus);
         }
 
         // Determine the price value and add marker to price group
-        let prices = listing.price;
+        let prices = parseFloat(listing.price.replace('$', ''));
+    
         if (prices >= 0 && prices <= 150) {
-            marker.addTo(price);
+            marker.addTo(price0to150);
         } else if (prices >= 151 && prices <= 300) {
-            marker.addTo(price);
+            marker.addTo(price151to300);
         } else if (prices >= 301 && prices <= 550) {
-            marker.addTo(price);
+            marker.addTo(price301to550);
         } else if (prices >= 551 && prices <= 1000) {
-            marker.addTo(price);
+            marker.addTo(price551to1000);
         } else {
-            marker.addTo(price);
+            marker.addTo(price1000plus);
         }
     });
 
     // Add MarkerClusterGroup to the map
     myMap.addLayer(markers);
 
-    // Add layer groups to the map
-    accommodates.addTo(myMap);
-    price.addTo(myMap);
-    heatLayer.addTo(myMap);
+    // Hide all layers initially
+    myMap.removeLayer(accommodates1to3);
+    myMap.removeLayer(accommodates4to6);
+    myMap.removeLayer(accommodates7plus);
+    myMap.removeLayer(price0to150);
+    myMap.removeLayer(price151to300);
+    myMap.removeLayer(price301to550);
+    myMap.removeLayer(price551to1000);
+    myMap.removeLayer(price1000plus);
+    myMap.removeLayer(heatLayer);
 
-        // Create layer control
-        let overlayMaps = {
-            "1-3": accommodates,
-            "4-6": accommodates,
-            "7+": accommodates,
-            "<$150": price,
-            "$150-$300": price,
-            "$300-$550": price,
-            "$550-$1000": price,
-            ">$1000": price,
-            "HeatMap": heatLayer
-        };
+    // Create a base layer object
+    let baseLayers = {
+        "All listings": markers,
+        "HeatMap": heatLayer
+    };
 
-    // Hide all layers
-    Object.values(overlayMaps).forEach(layer => {
-        myMap.removeLayer(layer);
-    });
-    
+    // Create overlay maps object
+    let overlayMaps = {
+        "Accommodates 1-3": accommodates1to3,
+        "Accommodates 4-6": accommodates4to6,
+        "Accommodates 7+": accommodates7plus,
+        "< $150": price0to150,
+        "$150-$300": price151to300,
+        "$301-$550": price301to550,
+        "$551-$1000": price551to1000,
+        "> $1000": price1000plus,
+    };
+
     // Add layer control to the map
-    L.control.layers(null, overlayMaps, { collapsed: false, layers: {} }).addTo(myMap);
+    let layerControl = L.control.layers(baseLayers, overlayMaps, { collapsed: false, layers: {} }).addTo(myMap);
+
+    // Event listener for layer control
+    myMap.on('overlayadd', function (eventLayer) {
+
+        // Iterate through all overlay maps
+        Object.keys(overlayMaps).forEach(function (key) {
+            if (eventLayer.name === key) {
+                let selectedLayer = overlayMaps[key];
+                markers.eachLayer(function (marker) {
+                    let listingPrice = marker.getPopup().getContent().match(/Price: (\d+)/)[1];
+                    if (key.startsWith("Accommodates")) {
+                        // Show markers based on accommodates criteria
+                        let accommodatesRange = key.split(" ")[1];
+                        let accommodatesValue = parseInt(accommodatesRange.split("-")[0]);
+                        if (!(listing.accommodates >= accommodatesValue && listing.accommodates <= accommodatesValue + 2)) {
+                            markers.removeLayer(marker);
+                        }
+                    } else if (key.startsWith("<")) {
+                        // Show markers based on price range criteria
+                        let maxPrice = parseInt(key.split("$")[1]);
+                        if (listingPrice > maxPrice) {
+                            markers.removeLayer(marker);
+                        }
+                    }
+                });
+            }
+        });
+    });
     
 }).catch(error => console.error('Error loading data:', error));
      
