@@ -9,12 +9,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-// Create a MarkerClusterGroup
-let markers = L.markerClusterGroup();
-
 // Call data
 d3.json("listings.json").then(function (data) {
     console.log("Data loaded:", data);
+
+    // Create a MarkerClusterGroup
+    let markers = L.markerClusterGroup();
 
     data.forEach(function (listing) {
         console.log("Latitude:", listing.latitude, "Longitude:", listing.longitude);
@@ -29,4 +29,19 @@ d3.json("listings.json").then(function (data) {
     });
 
     myMap.addLayer(markers);
-});
+
+    // Prepare heat map data
+    let heatData = data.map(function (listing) {
+        return [listing.latitude, listing.longitude];
+    });
+
+    // Create heat map layer
+    L.heatLayer(heatData, {
+        radius: 25,  // Adjust the radius as needed
+        blur: 15,    // Adjust the blur intensity as needed
+        maxZoom: 17, // Adjust the max zoom level as needed
+    }).addTo(myMap);
+
+    myMap.addLayer(heat);
+
+}).catch(error => console.error('Error loading data:', error));
