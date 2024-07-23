@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
     <meta charset="UTF-8">
     <title>Boston Airbnb</title>
 
@@ -17,6 +17,9 @@
     <!-- Marker cluster JavaScript code -->
     <script type="text/javascript" src="https://unpkg.com/leaflet.markercluster@1.0.3/dist/leaflet.markercluster.js"></script>
 
+    <!-- leaflet-choropleth JavaScript -->
+    <script type="text/javascript" src="https://unpkg.com/leaflet-choropleth/dist/choropleth.js"></script>
+
     <!-- Marker cluster CSS -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.0.3/dist/MarkerCluster.css">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.0.3/dist/MarkerCluster.Default.css">
@@ -24,13 +27,17 @@
     <!-- Our CSS  -->
     <link rel="stylesheet" href="style.css" />
 
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="map"></div>
+    <select id="neighbourhoodSelect">
+        <option value="">Select a Neighbourhood</option>
+    </select>
 
     <!-- JavaScript file -->
-    <script type="text/javascript" src="logic.js"></script>
-  </body>
+    <!-- <script type="text/javascript" src="logic.js"></script> -->
+    <script type="text/javascript" src="choro-logic.js"></script>
+</body>
 
 </html>

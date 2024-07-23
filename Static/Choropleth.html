@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/leaflet-choropleth/dist/choropleth.js"></script>
     <style>
         #map {
             height: 600px;
@@ -16,95 +17,103 @@
     <div id="map"></div>
 
     <script>
-        // Load ud boundaries
-        fetch('/Resources/neighbourhoods.geojson')
-            .then(response => response.json())
-            .then(neighbourhoods => {
-                // Load listing data
-                fetch('listings.json')
-                    .then(response => response.json())
-                    .then(listings => createChoroplethMap(neighbourhoods, listings))
-                    .catch(error => console.error('Error loading listings data:', error));
-            })
-            .catch(error => console.error('Error loading neighbourhoods data:', error));
+        // Creating the map object
+        let myMap = L.map("map", {
+            center: [42.36413, -71.02991],
+            zoom: 12
+        });
 
-        function createChoroplethMap(neighbourhoods, listings) {
-            // Create map
-            const map = L.map('map').setView([42.36413, -71.02991], 12);
+        // Adding the tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(myMap);
 
-            // Add tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+        // Load the neighbourhood boundaries GeoJSON data.
+        d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
+            // Load the listings data
+            d3.json('listings.json').then(function(listingsData) {
+                // Aggregate price data by neighbourhood
+                const priceByNeighbourhood = {};
+                listingsData.forEach(item => {
+                    const neighbourhood = item.neighbourhood;
+                    const price = item.price;
+                    if (!priceByNeighbourhood[neighbourhood]) {
+                        priceByNeighbourhood[neighbourhood] = [];
+                    }
+                    priceByNeighbourhood[neighbourhood].push(price);
+                });
 
-            // Aggregate price data by neighbourhood
-            const priceByNeighbourhood = {};
-            listings.forEach(item => {
-                const neighbourhood = item.neighbourhood;
-                const price = item.price;
-                if (!priceByNeighbourhood[neighbourhood]) {
-                    priceByNeighbourhood[neighbourhood] = [];
-                }
-                priceByNeighbourhood[neighbourhood].push(price);
-            });
+                console.log("Price by Neighbourhood:", priceByNeighbourhood);
 
-            const avgPriceByNeighbourhood = {};
-            for (const neighbourhood in priceByNeighbourhood) {
-                const prices = priceByNeighbourhood[neighbourhood];
-                const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
-                avgPriceByNeighbourhood[neighbourhood] = avgPrice;
-            }
-
-            // Function to get color based on average price
-            function getColor(price) {
-                return price > 200 ? '#800026' :
-                    price > 150 ? '#BD0026' :
-                    price > 100 ? '#E31A1C' :
-                    price > 50  ? '#FC4E2A' :
-                    price > 20  ? '#FD8D3C' :
-                                '#FFEDA0';
-            }
-
-            // Add neighbourhoods to the map with colors based on average price
-            L.geoJson(neighbourhoods, {
-                style: function(feature) {
-                    const neighbourhood = feature.properties.name;
-                    const avgPrice = avgPriceByNeighbourhood[neighbourhood] || 0;
-                    return {
-                        fillColor: getColor(avgPrice),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    };
-                },
-                onEachFeature: function(feature, layer) {
-                    const neighbourhood = feature.properties.name;
-                    const avgPrice = avgPriceByNeighbourhood[neighbourhood] || 'No data';
-                    layer.bindPopup(`Neighbourhood: ${neighbourhood}<br>Average Price: $${avgPrice}`);
-                }
-            }).addTo(map);
-
-            // Add legend
-            const legend = L.control({ position: 'bottomright' });
-
-            legend.onAdd = function(map) {
-                const div = L.DomUtil.create('div', 'info legend'),
-                    grades = [0, 20, 50, 100, 150, 200],
-                    labels = [];
-
-                for (let i = 0; i < grades.length; i++) {
-                    div.innerHTML +=
-                        '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-                        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+                const avgPriceByNeighbourhood = {};
+                for (const neighbourhood in priceByNeighbourhood) {
+                    const prices = priceByNeighbourhood[neighbourhood];
+                    const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+                    avgPriceByNeighbourhood[neighbourhood] = avgPrice;
                 }
 
-                return div;
-            };
+                console.log("Average Price by Neighbourhood:", avgPriceByNeighbourhood);
 
-            legend.addTo(map);
-        }
+                // Create a new choropleth layer
+                let geojson = L.choropleth(neighbourhoodsData, {
+                    // Define which property in the features to use
+                    valueProperty: function(feature) {
+                        const neighbourhood = feature.properties.name;
+                        return avgPriceByNeighbourhood[neighbourhood] || 0;
+                    },
+
+                    // Set the color scale
+                    scale: ["#ffffb2", "#b10026"],
+
+                    // The number of breaks in the step range
+                    steps: 10,
+
+                    // q for quartile, e for equidistant, k for k-means
+                    mode: "q",
+                    style: {
+                        // Border color
+                        color: "#fff",
+                        weight: 1,
+                        fillOpacity: 0.8
+                    },
+
+                    // Binding a popup to each layer
+                    onEachFeature: function(feature, layer) {
+                        const neighbourhood = feature.properties.name;
+                        const avgPrice = avgPriceByNeighbourhood[neighbourhood] || 'No data';
+                        layer.bindPopup(`<strong>Neighbourhood: ${neighbourhood}</strong><br>Average Price: $${avgPrice}`);
+                    }
+                }).addTo(myMap);
+
+                // Set up the legend
+                let legend = L.control({ position: "bottomright" });
+                legend.onAdd = function() {
+                    let div = L.DomUtil.create("div", "info legend");
+                    let limits = geojson.options.limits;
+                    let colors = geojson.options.colors;
+                    let labels = [];
+
+                    // Add the minimum and maximum
+                    let legendInfo = "<h1>Average Price</h1>" +
+                        "<div class=\"labels\">" +
+                            "<div class=\"min\">" + limits[0] + "</div>" +
+                            "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
+                        "</div>";
+
+                    div.innerHTML = legendInfo;
+
+                    limits.forEach(function(limit, index) {
+                        labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
+                    });
+
+                    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+                    return div;
+                };
+
+                // Adding the legend to the map
+                legend.addTo(myMap);
+            }).catch(error => console.error('Error loading listings data:', error));
+        }).catch(error => console.error('Error loading neighbourhoods data:', error));
     </script>
 </body>
 </html>
