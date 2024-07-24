@@ -1,6 +1,6 @@
 // Creating the map object
 let myMap = L.map("map", {
-    center: [42.36413, -71.02991],
+    center: [42.32413, -71.06991],
     zoom: 12
 });
 
@@ -23,26 +23,27 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             let neighbourhood = item.neighbourhood;
             let price = item.price;
 
-            // Remove any non-numeric characters (e.g., dollar sign, spaces) and convert to number
+            // Remove any non-numeric characters and convert to number
             if (price) {
                 price = parseFloat(price.replace(/[^0-9.-]+/g, ''));
-            };
+            }
 
             // Skip if price is missing or not a number
             if (isNaN(price)) return;
 
             if (!priceByNeighbourhood[neighbourhood]) {
                 priceByNeighbourhood[neighbourhood] = [];
-            };
+            }
             priceByNeighbourhood[neighbourhood].push(price);
         });
 
+        // Calculate average price by neighbourhood
         const avgPriceByNeighbourhood = {};
         for (const neighbourhood in priceByNeighbourhood) {
             const prices = priceByNeighbourhood[neighbourhood];
             if (prices.length > 0) {
                 const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
-                avgPriceByNeighbourhood[neighbourhood] = avgPrice;
+                avgPriceByNeighbourhood[neighbourhood] = parseFloat(avgPrice.toFixed(2));
             } else {
                 avgPriceByNeighbourhood[neighbourhood] = 0; // Default to 0 if no valid prices
             }
@@ -63,18 +64,19 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
         let geoJsonLayer;
         let previousHighlight = null;
 
-        // Create the choropleth layer manually
+        // Function to get color based on price
         function getColor(d) {
             return d > 450 ? '#800026' :
                 d > 350 ? '#BD0026' :
                 d > 300 ? '#E31A1C' :
                 d > 250 ? '#FC4E2A' :
-                d > 200 ? '#FD8D3C' : 
-                d > 150 ? '#FEB24C' : 
+                d > 200 ? '#FD8D3C' :
+                d > 150 ? '#FEB24C' :
                 d > 100 ? '#FED976' :
                         '#FFEDA0';
         }
 
+        // Style for each feature
         function style(feature) {
             let neighbourhood = feature.properties.neighbourhood;  
             let avgPrice = avgPriceByNeighbourhood[neighbourhood] || 0; // Default to 0 if no data
@@ -89,6 +91,7 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             };
         }
 
+        // Reset highlight
         function resetHighlight() {
             geoJsonLayer.eachLayer(layer => {
                 if (layer.feature.properties.neighbourhood === previousHighlight) {
@@ -107,6 +110,7 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             });
         }
 
+        // Highlight feature
         function highlightFeature(e) {
             let layer = e.target;
             layer.setStyle({
@@ -117,6 +121,7 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             });
         }
 
+        // For each feature
         function onEachFeature(feature, layer) {
             layer.on({
                 mouseover: highlightFeature,
@@ -127,6 +132,7 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             layer.bindPopup(`<strong>Neighbourhood: ${neighbourhood}</strong><br>Average Price: $${avgPrice}`);
         }
 
+        // Create geoJsonLayer
         geoJsonLayer = L.geoJson(neighbourhoodsData, {
             style: style,
             onEachFeature: onEachFeature
@@ -140,20 +146,18 @@ d3.json('/Resources/neighbourhoods.geojson').then(function(neighbourhoodsData) {
             div.style.padding = "10px";    
 
             // Add the title
-            div.innerHTML = "<h4>Average Nightly Price</h4>";
+            div.innerHTML = "<h4 style='margin-top: 0; margin-bottom: 10px;'>Average Nightly Price ($)</h4>";
 
             // Define the grades and their labels
             let grades = [0, 100, 150, 200, 250, 300, 350, 450];
 
             // Add the color ranges with sample colors
             grades.forEach(function(grade, index) {
-                // Generate a sample color for each range
                 let color = getColor(grade + 1);
                 div.innerHTML +=
                     '<i style="background:' + color + '; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></i> ' +
                     grade + (grades[index + 1] ? '&ndash;' + grades[index + 1] + '<br>' : '+');
             });
-
             return div;
         };
 
