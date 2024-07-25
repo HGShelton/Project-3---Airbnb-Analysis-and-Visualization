@@ -11,134 +11,161 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-Promise.all([
-    createChoroplethLayer(myMap),
-    createHeatMap(myMap),
-    createMarkerClusterLayer(myMap)
-]).then(([choroplethResult, heatMapLayer, markerClusterResult]) => {
-    let { geoJsonLayer: choroplethLayer, legend: choroplethLegend } = choroplethResult;
-    let {
-        markers: markerClusterLayer,
-        accommodates1to3,
-        accommodates4to6,
-        accommodates7plus,
-        price0to150,
-        price151to300,
-        price301to550,
-        price551to1000,
-        price1000plus
-    } = markerClusterResult;
+// Load the neighbourhood boundaries GeoJSON data
+d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) {
+    console.log('Neighbourhood data loaded successfully:', neighbourhoodsData);
 
-    // Base layers
-    let baseLayers = {
-        "Street Map": myMap,
-        "Heat Map": heatMapLayer,
-        "Choropleth Layer": choroplethLayer
-    };
+    // Create a GeoJSON layer for neighbourhoods with medium gray outlines
+    let neighbourhoodLayer = L.geoJson(neighbourhoodsData, {
+        style: function (feature) {
+            return {
+                color: '#808080',  // Medium gray outline color
+                weight: 2,         // Outline weight
+                fillOpacity: 0     // Make the fill transparent
+            };
+        }
+    }).addTo(myMap);  // Add the layer to the map
 
-    // Overlay layers
-    let overlayLayers = {
-        "All Listings": markerClusterLayer,
-        "Accommodates 1-3": accommodates1to3,
-        "Accommodates 4-6": accommodates4to6,
-        "Accommodates 7+": accommodates7plus,
-        "< $150": price0to150,
-        "$150-$300": price151to300,
-        "$301-$550": price301to550,
-        "$551-$1000": price551to1000,
-        "> $1000": price1000plus
-    };
+    Promise.all([
+        createChoroplethLayer(myMap),
+        createHeatMap(myMap),
+        createMarkerClusterLayer(myMap)
+    ]).then(([choroplethResult, heatMapLayer, markerClusterResult]) => {
+        let { geoJsonLayer: choroplethLayer, legend: choroplethLegend } = choroplethResult;
+        let {
+            markers: markerClusterLayer,
+            accommodates1to3,
+            accommodates4to6,
+            accommodates7plus,
+            price0to150,
+            price151to300,
+            price301to550,
+            price551to1000,
+            price1000plus
+        } = markerClusterResult;
 
-    // Add layer control to the map
-    let layerControl = L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(myMap);
+        // Base layers
+        let baseLayers = {
+            "Street Map": myMap,
+            "Heat Map": heatMapLayer,
+            "Choropleth Layer": choroplethLayer
+        };
 
-    // Track active filters
-    let activeAccommodationFilter = null;
-    let activePriceFilter = null;
+        // Overlay layers
+        let overlayLayers = {
+            "All Listings": markerClusterLayer,
+            "Accommodates 1-3": accommodates1to3,
+            "Accommodates 4-6": accommodates4to6,
+            "Accommodates 7+": accommodates7plus,
+            "< $150": price0to150,
+            "$150-$300": price151to300,
+            "$301-$550": price301to550,
+            "$551-$1000": price551to1000,
+            "> $1000": price1000plus
+        };
 
-    function applyFilters() {
-        // Clear current markers
-        markerClusterLayer.clearLayers();
+        // Add layer control to the map
+        let layerControl = L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(myMap);
 
-        // Get all markers
-        const allMarkers = [
-            ...accommodates1to3.getLayers(),
-            ...accommodates4to6.getLayers(),
-            ...accommodates7plus.getLayers(),
-            ...price0to150.getLayers(),
-            ...price151to300.getLayers(),
-            ...price301to550.getLayers(),
-            ...price551to1000.getLayers(),
-            ...price1000plus.getLayers()
-        ];
+        // Track active filters
+        let activeAccommodationFilter = null;
+        let activePriceFilter = null;
 
-        // Apply accommodation filter if set
-        let filteredMarkers = allMarkers;
-        if (activeAccommodationFilter) {
-            filteredMarkers = filteredMarkers.filter(marker =>
-                activeAccommodationFilter.hasLayer(marker)
-            );
+        function applyFilters() {
+            // Clear current markers
+            markerClusterLayer.clearLayers();
+
+            // Get all markers
+            const allMarkers = [
+                ...accommodates1to3.getLayers(),
+                ...accommodates4to6.getLayers(),
+                ...accommodates7plus.getLayers(),
+                ...price0to150.getLayers(),
+                ...price151to300.getLayers(),
+                ...price301to550.getLayers(),
+                ...price551to1000.getLayers(),
+                ...price1000plus.getLayers()
+            ];
+
+            // Apply accommodation filter if set
+            let filteredMarkers = allMarkers;
+            if (activeAccommodationFilter) {
+                filteredMarkers = filteredMarkers.filter(marker =>
+                    activeAccommodationFilter.hasLayer(marker)
+                );
+            }
+
+            // Apply price filter if set
+            if (activePriceFilter) {
+                filteredMarkers = filteredMarkers.filter(marker =>
+                    activePriceFilter.hasLayer(marker)
+                );
+            }
+
+            // Add filtered markers to marker cluster layer
+            filteredMarkers.forEach(marker => markerClusterLayer.addLayer(marker));
         }
 
-        // Apply price filter if set
-        if (activePriceFilter) {
-            filteredMarkers = filteredMarkers.filter(marker =>
-                activePriceFilter.hasLayer(marker)
-            );
+        // Function to manage legend visibility for the choropleth layer
+        function updateLegendVisibility() {
+            if (myMap.hasLayer(choroplethLayer)) {
+                choroplethLegend.addTo(myMap);
+            } else {
+                myMap.removeControl(choroplethLegend);
+            }
         }
 
-        // Add filtered markers to marker cluster layer
-        filteredMarkers.forEach(marker => markerClusterLayer.addLayer(marker));
-    }
+        // Listen to base layer changes
+        myMap.on('baselayerchange', function (eventLayer) {
+            if (eventLayer.name === 'Choropleth Layer') {
+                updateLegendVisibility();
+            } else {
+                // If switching to a non-choropleth base layer, hide the legend
+                myMap.removeControl(choroplethLegend);
+            }
+        });
 
-    // Listen to overlayadd and overlayremove events
-    myMap.on('overlayadd', function (eventLayer) {
-        switch (eventLayer.name) {
-            case 'Accommodates 1-3':
-            case 'Accommodates 4-6':
-            case 'Accommodates 7+':
-                activeAccommodationFilter = eventLayer.layer;
-                break;
-            case '< $150':
-            case '$150-$300':
-            case '$301-$550':
-            case '$551-$1000':
-            case '> $1000':
-                activePriceFilter = eventLayer.layer;
-                break;
-        }
-        applyFilters();
-    });
+        // Listen to overlayadd and overlayremove events
+        myMap.on('overlayadd', function (eventLayer) {
+            switch (eventLayer.name) {
+                case 'Accommodates 1-3':
+                case 'Accommodates 4-6':
+                case 'Accommodates 7+':
+                    activeAccommodationFilter = eventLayer.layer;
+                    break;
+                case '< $150':
+                case '$150-$300':
+                case '$301-$550':
+                case '$551-$1000':
+                case '> $1000':
+                    activePriceFilter = eventLayer.layer;
+                    break;
+            }
+            applyFilters();
+        });
 
-    myMap.on('overlayremove', function (eventLayer) {
-        switch (eventLayer.name) {
-            case 'Accommodates 1-3':
-            case 'Accommodates 4-6':
-            case 'Accommodates 7+':
-                activeAccommodationFilter = null;
-                break;
-            case '< $150':
-            case '$150-$300':
-            case '$301-$550':
-            case '$551-$1000':
-            case '> $1000':
-                activePriceFilter = null;
-                break;
-        }
-        applyFilters();
-    });
+        myMap.on('overlayremove', function (eventLayer) {
+            switch (eventLayer.name) {
+                case 'Accommodates 1-3':
+                case 'Accommodates 4-6':
+                case 'Accommodates 7+':
+                    activeAccommodationFilter = null;
+                    break;
+                case '< $150':
+                case '$150-$300':
+                case '$301-$550':
+                case '$551-$1000':
+                case '> $1000':
+                    activePriceFilter = null;
+                    break;
+            }
+            applyFilters();
+        });
 
-    // Function to manage legend visibility for the choropleth layer
-    myMap.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'Choropleth Layer') {
-            choroplethLegend.addTo(myMap);
-        }
-    });
+        // Initially add the layers to the map
+        choroplethLayer.addTo(myMap);
+        markerClusterLayer.addTo(myMap);
+        updateLegendVisibility(); // Ensure legend is correctly displayed
 
-    myMap.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'Choropleth Layer') {
-            myMap.removeControl(choroplethLegend);
-        }
-    });
-
-}).catch(error => console.error('Error loading layers:', error));
+    }).catch(error => console.error('Error loading layers:', error));
+}).catch(error => console.error('Error loading neighbourhoods data:', error));

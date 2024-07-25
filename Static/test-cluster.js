@@ -1,6 +1,7 @@
 // test-cluster.js
 export function createMarkerClusterLayer(map) {
     return new Promise((resolve, reject) => {
+        
         d3.json('listings.json').then(function (data) {
             console.log("Data loaded:", data);
 
