@@ -117,10 +117,7 @@ export function createChoroplethLayer(map) {
                     onEachFeature: onEachFeature
                 });
 
-                // Add the layer to the map
-                geoJsonLayer.addTo(map);
-
-                // Set up the legend
+                // Create the legend
                 let legend = L.control({ position: "bottomright" });
                 legend.onAdd = function () {
                     let div = L.DomUtil.create("div", "info legend");
@@ -143,10 +140,12 @@ export function createChoroplethLayer(map) {
                     return div;
                 };
 
+                // Add the layer to the map and add the legend
+                geoJsonLayer.addTo(map);
                 legend.addTo(map);
 
-                // Resolve the promise with the geoJsonLayer
-                resolve(geoJsonLayer);
+                // Resolve the promise with the geoJsonLayer and legend
+                resolve({ geoJsonLayer, legend });
 
             }).catch(error => reject('Error loading listings data:', error));
         }).catch(error => reject('Error loading neighbourhoods data:', error));
