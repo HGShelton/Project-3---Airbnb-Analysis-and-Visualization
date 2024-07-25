@@ -1,7 +1,7 @@
 // test-main.js
-import { createChoroplethLayer } from './test-choro-logic.js';
-import { createHeatMap } from './test-heatMap.js';
-import { createMarkerClusterLayer } from './test-cluster.js';
+import { createChoroplethLayer } from './choro_logic.js';
+import { createHeatMap } from './heatMap_logic.js';
+import { createMarkerClusterLayer } from './cluster_logic.js';
 
 let myMap = L.map("map", {
     center: [42.32413, -71.06991],
