@@ -1,14 +1,19 @@
-//Define a map object
+import { createChoroplethLayer } from './choro-logic.js';
+
+// Define a map object
 let myMap = L.map("map", {
     center: [42.3601, -71.0589],
     zoom: 13,
-    layers: null
+    layers: []
 });
 
-// Add a tile layer
+// Add a default tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
+
+// Load the GeoJSON choropleth layer
+let choroplethLayer = createChoroplethLayer(myMap);
 
 // Create layer groups for accommodation values
 let accommodates1to3 = L.layerGroup();
@@ -95,7 +100,7 @@ d3.json("listings.json").then(function (data) {
     // Create a base layer object
     let baseLayers = {
         "All listings": markers,
-        "HeatMap": heatLayer
+        "HeatMap": heatLayer,
     };
 
     // Create overlay maps object
@@ -142,4 +147,3 @@ d3.json("listings.json").then(function (data) {
     });
     
 }).catch(error => console.error('Error loading data:', error));
-     
