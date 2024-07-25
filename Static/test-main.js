@@ -1,3 +1,4 @@
+// test-main.js
 import { createChoroplethLayer } from './test-choro-logic.js';
 import { createHeatMap } from './test-heatMap.js';
 import { createMarkerClusterLayer } from './test-cluster.js';
@@ -149,14 +150,18 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
                 case 'Accommodates 1-3':
                 case 'Accommodates 4-6':
                 case 'Accommodates 7+':
-                    activeAccommodationFilter = null;
+                    if (activeAccommodationFilter === eventLayer.layer) {
+                        activeAccommodationFilter = null;
+                    }
                     break;
                 case '< $150':
                 case '$150-$300':
                 case '$301-$550':
                 case '$551-$1000':
                 case '> $1000':
-                    activePriceFilter = null;
+                    if (activeAccommodationFilter === eventLayer.layer) {
+                        activeAccommodationFilter = null;
+                    }
                     break;
             }
             applyFilters();

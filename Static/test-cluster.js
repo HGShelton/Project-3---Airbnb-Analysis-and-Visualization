@@ -57,6 +57,85 @@ export function createMarkerClusterLayer(map) {
                 }
             });
 
+            // Active filters
+            let activeAccommodationFilter = null;
+            let activePriceFilter = null;
+
+            // Function to apply filters and update markers
+            function applyFilters() {
+                // Clear current markers
+                markers.clearLayers();
+
+                // Get all markers
+                const allMarkers = [
+                    ...accommodates1to3.getLayers(),
+                    ...accommodates4to6.getLayers(),
+                    ...accommodates7plus.getLayers(),
+                    ...price0to150.getLayers(),
+                    ...price151to300.getLayers(),
+                    ...price301to550.getLayers(),
+                    ...price551to1000.getLayers(),
+                    ...price1000plus.getLayers()
+                ];
+
+                // Apply filters if both are set
+                let filteredMarkers = allMarkers;
+                if (activeAccommodationFilter) {
+                    filteredMarkers = filteredMarkers.filter(marker =>
+                        activeAccommodationFilter.hasLayer(marker)
+                    );
+                }
+                if (activePriceFilter) {
+                    filteredMarkers = filteredMarkers.filter(marker =>
+                        activePriceFilter.hasLayer(marker)
+                    );
+                }
+
+                // Add filtered markers to marker cluster layer
+                filteredMarkers.forEach(marker => markers.addLayer(marker));
+            }
+
+            // // Listen to overlayadd and overlayremove events
+            // map.on('overlayadd', function (eventLayer) {
+            //     switch (eventLayer.name) {
+            //         case 'Accommodates 1-3':
+            //         case 'Accommodates 4-6':
+            //         case 'Accommodates 7+':
+            //             activeAccommodationFilter = eventLayer.layer;
+            //             break;
+            //         case '< $150':
+            //         case '$150-$300':
+            //         case '$301-$550':
+            //         case '$551-$1000':
+            //         case '> $1000':
+            //             activePriceFilter = eventLayer.layer;
+            //             break;
+            //     }
+            //     applyFilters();
+            // });
+
+            // map.on('overlayremove', function (eventLayer) {
+            //     switch (eventLayer.name) {
+            //         case 'Accommodates 1-3':
+            //         case 'Accommodates 4-6':
+            //         case 'Accommodates 7+':
+            //             if (activeAccommodationFilter === eventLayer.layer) {
+            //                 activeAccommodationFilter = null;
+            //             }
+            //             break;
+            //         case '< $150':
+            //         case '$150-$300':
+            //         case '$301-$550':
+            //         case '$551-$1000':
+            //         case '> $1000':
+            //             if (activePriceFilter === eventLayer.layer) {
+            //                 activePriceFilter = null;
+            //             }
+            //             break;
+            //     }
+            //     applyFilters();
+            // });
+
             // Resolve the promise with the created layers
             resolve({
                 markers,
