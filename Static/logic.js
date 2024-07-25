@@ -64,36 +64,3 @@ Promise.all([
         }).catch(error => console.error('Error creating Marker Cluster Layer:', error));
     }).catch(error => console.error('Error loading data:', error));
 });
-
-//     // Add layer control to the map
-//     let layerControl = L.control.layers(baseLayers, overlayMaps, { collapsed: false, layers: {} }).addTo(myMap);
-
-//     // Event listener for layer control
-//     myMap.on('overlayadd', function (eventLayer) {
-
-//         // Iterate through all overlay maps
-//         Object.keys(overlayMaps).forEach(function (key) {
-//             if (eventLayer.name === key) {
-//                 let selectedLayer = overlayMaps[key];
-//                 markers.eachLayer(function (marker) {
-//                     let listingPrice = marker.getPopup().getContent().match(/Price: (\d+)/)[1];
-//                     if (key.startsWith("Accommodates")) {
-//                         // Show markers based on accommodates criteria
-//                         let accommodatesRange = key.split(" ")[1];
-//                         let accommodatesValue = parseInt(accommodatesRange.split("-")[0]);
-//                         if (!(listing.accommodates >= accommodatesValue && listing.accommodates <= accommodatesValue + 2)) {
-//                             markers.removeLayer(marker);
-//                         }
-//                     } else if (key.startsWith("<")) {
-//                         // Show markers based on price range criteria
-//                         let maxPrice = parseInt(key.split("$")[1]);
-//                         if (listingPrice > maxPrice) {
-//                             markers.removeLayer(marker);
-//                         }
-//                     }
-//                 });
-//             }
-//         });
-//     });
-    
-// }).catch(error => console.error('Error loading data:', error));
