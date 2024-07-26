@@ -1,21 +1,24 @@
 /* Remove the default margin and padding from the body. */
 body {
-  padding: 0;
-  margin: 0;
-}
-
-/* Set map, body, and html to 100% of the screen size. */
-#map,
-body,
-html {
-  height: 100%;
-}
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Set map, body, and html to 100% of the screen size. */
+  #map,
+  body,
+  html {
+    height: 100%;
+  }
 /* dropdown */
 #neighbourhoodSelect {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
+  top: 10px;  
+  left: 10px; 
+  z-index: 1000; /* Ensure it appears above other map controls */
+  background-color: white;
   padding: 5px;
-  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
 }

@@ -1,4 +1,3 @@
-// test-main.js
 import { createChoroplethLayer } from './choro_logic.js';
 import { createHeatMap } from './heatMap_logic.js';
 import { createMarkerClusterLayer } from './cluster_logic.js';
@@ -11,6 +10,33 @@ let myMap = L.map("map", {
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
+
+
+// Create a custom control for the dropdown
+let NeighbourhoodControl = L.Control.extend({
+    options: {
+        position: 'topleft'
+    },
+    onAdd: function (myMap) {
+        let container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.style.backgroundColor = 'white';
+        container.style.padding = '5px';
+
+        let select = L.DomUtil.create('select', '', container);
+        select.id = 'neighbourhoodDropdown'; // Make sure this ID matches your selector in the rest of your code
+        select.style.width = '185px';
+
+        // Add default option
+        let defaultOption = document.createElement('option');
+        defaultOption.text = 'Select Neighbourhood';
+        defaultOption.value = '';
+        select.add(defaultOption);
+
+        return container;
+    }
+});
+
+myMap.addControl(new NeighbourhoodControl());
 
 // Load the neighbourhood boundaries GeoJSON data
 d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) {
@@ -26,6 +52,26 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
             };
         }
     }).addTo(myMap);  // Add the layer to the map
+
+    // Populate the dropdown with neighbourhood names
+    let select = document.getElementById('neighbourhoodDropdown');
+    neighbourhoodsData.features.forEach(feature => {
+        let option = document.createElement('option');
+        option.text = feature.properties.neighbourhood;  // Adjust this property name to match your GeoJSON
+        option.value = feature.properties.neighbourhood; // Adjust this property name to match your GeoJSON
+        select.add(option);
+    });
+
+    select.addEventListener('change', function () {
+        let selectedNeighbourhood = this.value;
+        if (selectedNeighbourhood) {
+            let selectedFeature = neighbourhoodsData.features.find(feature => feature.properties.neighbourhood === selectedNeighbourhood);
+            if (selectedFeature) {
+                let bounds = L.geoJson(selectedFeature).getBounds();
+                myMap.fitBounds(bounds);
+            }
+        }
+    });
 
     Promise.all([
         createChoroplethLayer(myMap),
@@ -159,8 +205,8 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
                 case '$301-$550':
                 case '$551-$1000':
                 case '> $1000':
-                    if (activeAccommodationFilter === eventLayer.layer) {
-                        activeAccommodationFilter = null;
+                    if (activePriceFilter === eventLayer.layer) {
+                        activePriceFilter = null;
                     }
                     break;
             }
