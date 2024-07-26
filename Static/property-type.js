@@ -31,7 +31,7 @@ function filterListings(listing, selectedPropertyType) {
 }
 
 // Load and display data
-d3.json("listings.json").then(function (data) {
+d3.json('http://localhost:3000/api/listings').then(function (data) {
     console.log("Data loaded:", data);
 
     // Populate the dropdown with property types

@@ -2,11 +2,11 @@
 export function createChoroplethLayer(map) {
     return new Promise((resolve, reject) => {
         // Load the neighbourhood boundaries GeoJSON data
-        d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) {
+        d3.json('http://localhost:3000/api/neighbourhoods').then(function (neighbourhoodsData) {
             console.log('Neighbourhood data loaded successfully:', neighbourhoodsData);
 
             // Load the listings data
-            d3.json('listings.json').then(function (listingsData) {
+            d3.json('http://localhost:3000/api/listings').then(function (listingsData) {
                 console.log('Listings data loaded successfully:', listingsData);
 
                 // Aggregate price data by neighbourhood

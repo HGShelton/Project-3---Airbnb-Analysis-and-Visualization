@@ -1,7 +1,7 @@
 // test-heatMap.js
 export function createHeatMap(map) {
     return new Promise((resolve, reject) => {
-        d3.json("listings.json").then(function (data) {
+        d3.json('http://localhost:3000/api/listings').then(function (data) {
             let heatData = data.map(function (listing) {
                 return [listing.latitude, listing.longitude];
             });
