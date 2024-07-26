@@ -178,19 +178,25 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
                 "Choropleth Layer": choroplethLayer
             };
 
-            let overlayLayers = {
-                "All Listings": markerClusterLayer,
-                "Accommodates 1-3": accommodates1to3,
-                "Accommodates 4-6": accommodates4to6,
-                "Accommodates 7+": accommodates7plus,
-                "< $150": price0to150,
-                "$150-$300": price151to300,
-                "$301-$550": price301to550,
-                "$551-$1000": price551to1000,
-                "> $1000": price1000plus
+            // Overlay layers
+            let groupedOverlayLayers = {
+                "Accommodates": {
+                    "All Listings": markerClusterLayer,
+                    "Accommodates 1-3": accommodates1to3,
+                    "Accommodates 4-6": accommodates4to6,
+                    "Accommodates 7+": accommodates7plus
+                },
+                "Price per night": {
+                    "< $150": price0to150,
+                    "$150-$300": price151to300,
+                    "$301-$550": price301to550,
+                    "$551-$1000": price551to1000,
+                    "> $1000": price1000plus
+                }
             };
 
-            let layerControl = L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(myMap);
+            // Add layer control to the map
+            let layerControl = L.control.groupedLayers(baseLayers, groupedOverlayLayers, { collapsed: false }).addTo(myMap);
 
             let activeAccommodationFilter = null;
             let activePriceFilter = null;
