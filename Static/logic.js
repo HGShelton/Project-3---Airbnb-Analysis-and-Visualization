@@ -1,7 +1,8 @@
-// import other logic files/layers
-import { createChoroplethLayer } from './choro-logic.js';
-import { createHeatMap } from './heatmap.js';
-import { createMarkerClusterLayer } from './markercluster.js';
+import { createChoroplethLayer } from './choro_logic.js';
+import { createHeatMap } from './heatMap_logic.js';
+import { createMarkerClusterLayer } from './cluster_logic.js';
+import './sidePanel.js';
+
 
 // Initialize the map
 let myMap = L.map("map", {
@@ -9,8 +10,18 @@ let myMap = L.map("map", {
     zoom: 12
 });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+let streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(myMap);
+
+// Create and add the side panel control to the map
+let sidePanel = L.control.sidepanel('sidePanel', {
+    panelPosition: 'left',
+    hasTabs: true,
+    tabsPosition: 'bottom',
+    darkMode: false,
+    pushControls: false,
+    startTab: 1
 }).addTo(myMap);
 
 // Create a custom control for the neighbourhood dropdown
@@ -18,7 +29,7 @@ let NeighbourhoodControl = L.Control.extend({
     options: {
         position: 'topleft'
     },
-    onAdd: function (myMap) {
+    onAdd: function () {
         let container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.style.backgroundColor = 'white';
         container.style.padding = '5px';
@@ -44,7 +55,7 @@ let PropertyTypeControl = L.Control.extend({
     options: {
         position: 'topleft'
     },
-    onAdd: function (myMap) {
+    onAdd: function () {
         let container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.style.backgroundColor = 'white';
         container.style.padding = '5px';
@@ -82,7 +93,7 @@ function filterListings(listing, selectedPropertyType) {
 }
 
 // Load the neighbourhood boundaries GeoJSON data
-d3.json('http://localhost:3000/api/neighbourhoods').then(function (neighbourhoodsData) {
+d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) {
     console.log('Neighbourhood data loaded successfully:', neighbourhoodsData);
 
     // Create a GeoJSON layer for neighbourhoods with medium gray outlines
@@ -117,14 +128,12 @@ d3.json('http://localhost:3000/api/neighbourhoods').then(function (neighbourhood
     });
 
     // Load and display data
-    d3.json('http://localhost:3000/api/listings').then(function (listingsData) {
+    d3.json("listings.json").then(function (listingsData) {
         console.log("Listings data loaded:", listingsData);
-
-        // Populate the property type dropdown
-        populatePropertyTypeDropdown(listingsData);
-
+    
+        // Initialize the marker cluster group
         let markers = L.markerClusterGroup();
-
+    
         function updateMarkers() {
             markers.clearLayers();
 
@@ -173,17 +182,18 @@ d3.json('http://localhost:3000/api/neighbourhoods').then(function (neighbourhood
             } = markerClusterResult;
 
             let baseLayers = {
-                "Street Map": myMap,
+                "Street Map": streetMap,
                 "Heat Map": heatMapLayer,
                 "Choropleth Layer": choroplethLayer
             };
 
+            // Overlay layers
             let groupedOverlayLayers = {
                 "Accommodates": {
                     "All Listings": markerClusterLayer,
                     "Accommodates 1-3": accommodates1to3,
                     "Accommodates 4-6": accommodates4to6,
-                    "Accommodates 7+": accommodates7plus,
+                    "Accommodates 7+": accommodates7plus
                 },
                 "Price per night": {
                     "< $150": price0to150,
@@ -193,7 +203,7 @@ d3.json('http://localhost:3000/api/neighbourhoods').then(function (neighbourhood
                     "> $1000": price1000plus
                 }
             };
-    
+
             // Add layer control to the map
             let layerControl = L.control.groupedLayers(baseLayers, groupedOverlayLayers, { collapsed: false }).addTo(myMap);
 
