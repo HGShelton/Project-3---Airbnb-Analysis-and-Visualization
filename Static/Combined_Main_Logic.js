@@ -9,7 +9,7 @@ let myMap = L.map("map", {
     zoom: 12
 });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+let streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
@@ -173,7 +173,7 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
             } = markerClusterResult;
 
             let baseLayers = {
-                "Street Map": myMap,
+                "Street Map": streetMap,
                 "Heat Map": heatMapLayer,
                 "Choropleth Layer": choroplethLayer
             };
