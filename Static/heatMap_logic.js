@@ -9,18 +9,12 @@ export function createHeatMap(map) {
             let heatLayer = L.heatLayer(heatData, {
                 radius: 25,
                 blur: 15,
-<<<<<<< HEAD
                 maxZoom: 17,
-=======
                 maxZoom: 18,
->>>>>>> shelton
+                maxZoom: 18,
             });
 
             resolve(heatLayer);
         }).catch(error => reject(error));
     });
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> shelton

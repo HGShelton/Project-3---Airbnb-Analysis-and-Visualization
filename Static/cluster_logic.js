@@ -95,50 +95,7 @@ export function createMarkerClusterLayer(map) {
                 filteredMarkers.forEach(marker => markers.addLayer(marker));
             }
 
-<<<<<<< HEAD
-            // // Listen to overlayadd and overlayremove events
-            // map.on('overlayadd', function (eventLayer) {
-            //     switch (eventLayer.name) {
-            //         case 'Accommodates 1-3':
-            //         case 'Accommodates 4-6':
-            //         case 'Accommodates 7+':
-            //             activeAccommodationFilter = eventLayer.layer;
-            //             break;
-            //         case '< $150':
-            //         case '$150-$300':
-            //         case '$301-$550':
-            //         case '$551-$1000':
-            //         case '> $1000':
-            //             activePriceFilter = eventLayer.layer;
-            //             break;
-            //     }
-            //     applyFilters();
-            // });
-
-            // map.on('overlayremove', function (eventLayer) {
-            //     switch (eventLayer.name) {
-            //         case 'Accommodates 1-3':
-            //         case 'Accommodates 4-6':
-            //         case 'Accommodates 7+':
-            //             if (activeAccommodationFilter === eventLayer.layer) {
-            //                 activeAccommodationFilter = null;
-            //             }
-            //             break;
-            //         case '< $150':
-            //         case '$150-$300':
-            //         case '$301-$550':
-            //         case '$551-$1000':
-            //         case '> $1000':
-            //             if (activePriceFilter === eventLayer.layer) {
-            //                 activePriceFilter = null;
-            //             }
-            //             break;
-            //     }
-            //     applyFilters();
-            // });
-
-=======
->>>>>>> shelton
+            
             // Resolve the promise with the created layers
             resolve({
                 markers,
@@ -153,9 +110,5 @@ export function createMarkerClusterLayer(map) {
             });
         }).catch(error => reject('Error loading data:', error));
     });
-<<<<<<< HEAD
-}
-=======
 }
 
->>>>>>> shelton

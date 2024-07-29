@@ -1,4 +1,4 @@
-// test-choro-logic.js
+// test-choro-logic.js 
 export function createChoroplethLayer(map) {
     return new Promise((resolve, reject) => {
         // Load the neighbourhood boundaries GeoJSON data
@@ -150,8 +150,4 @@ export function createChoroplethLayer(map) {
             }).catch(error => reject('Error loading listings data:', error));
         }).catch(error => reject('Error loading neighbourhoods data:', error));
     });
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> shelton
