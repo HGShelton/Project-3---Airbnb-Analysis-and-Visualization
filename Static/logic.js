@@ -3,7 +3,6 @@ import { createHeatMap } from './heatMap_logic.js';
 import { createMarkerClusterLayer } from './cluster_logic.js';
 import './sidePanel.js';
 
-
 // Initialize the map
 let myMap = L.map("map", {
     center: [42.32413, -71.06991],
@@ -76,7 +75,8 @@ let PropertyTypeControl = L.Control.extend({
 
 myMap.addControl(new PropertyTypeControl());
 
-function populatePropertyTypeDropdown(data) {
+// Function to populate the dropdown with unique property types
+function populateDropdown(data) {
     let propertyTypes = new Set(data.map(listing => listing.property_type));
     let dropdown = document.getElementById("propertyTypeDropdown");
 
@@ -88,6 +88,7 @@ function populatePropertyTypeDropdown(data) {
     });
 }
 
+// Function to filter listings based on selected property type
 function filterListings(listing, selectedPropertyType) {
     return selectedPropertyType === "all" || listing.property_type.toLowerCase() === selectedPropertyType;
 }
@@ -130,24 +131,21 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
     // Load and display data
     d3.json("listings.json").then(function (listingsData) {
         console.log("Listings data loaded:", listingsData);
-    
+
+        // Populate the dropdown with property types
+        populateDropdown(listingsData);
+
         // Initialize the marker cluster group
         let markers = L.markerClusterGroup();
-    
+
         function updateMarkers() {
             markers.clearLayers();
 
             const selectedPropertyType = document.getElementById("propertyTypeDropdown").value.toLowerCase();
-            
-            if (selectedPropertyType === "all") {
-                // If "Select A Property Type" is selected, clear all markers and return
-                myMap.removeLayer(markers);
-                return;
-            }
-
             const filteredData = listingsData.filter(listing => filterListings(listing, selectedPropertyType));
 
             filteredData.forEach(function (listing) {
+                console.log("Latitude:", listing.latitude, "Longitude:", listing.longitude);
                 let marker = L.marker([listing.latitude, listing.longitude]);
                 markers.addLayer(marker);
                 marker.on('mouseover', function () {
@@ -161,7 +159,11 @@ d3.json('/Resources/neighbourhoods.geojson').then(function (neighbourhoodsData) 
             myMap.addLayer(markers);
         }
 
+        // Add event listener for dropdown change
         document.getElementById("propertyTypeDropdown").addEventListener("change", updateMarkers);
+
+        // Initial marker update
+        updateMarkers();
 
         Promise.all([
             createChoroplethLayer(myMap),
