@@ -2,7 +2,7 @@
     position: absolute; /* Absolute positioning to overlay the map */
     top: 0;
     height: 100%;
-    width: 500px; /* Width of the side panel, adjust as needed */
+    width: 700px; /* Width of the side panel, adjust as needed */
     background-color: white;
     transition: transform 0.3s ease;
     transform: translateX(-100%); /* Initially hidden */
