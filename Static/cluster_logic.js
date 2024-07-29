@@ -95,6 +95,7 @@ export function createMarkerClusterLayer(map) {
                 filteredMarkers.forEach(marker => markers.addLayer(marker));
             }
 
+<<<<<<< HEAD
             // // Listen to overlayadd and overlayremove events
             // map.on('overlayadd', function (eventLayer) {
             //     switch (eventLayer.name) {
@@ -136,6 +137,8 @@ export function createMarkerClusterLayer(map) {
             //     applyFilters();
             // });
 
+=======
+>>>>>>> shelton
             // Resolve the promise with the created layers
             resolve({
                 markers,
@@ -150,4 +153,9 @@ export function createMarkerClusterLayer(map) {
             });
         }).catch(error => reject('Error loading data:', error));
     });
+<<<<<<< HEAD
 }
+=======
+}
+
+>>>>>>> shelton

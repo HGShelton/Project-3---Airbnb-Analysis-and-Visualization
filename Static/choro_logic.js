@@ -150,4 +150,8 @@ export function createChoroplethLayer(map) {
             }).catch(error => reject('Error loading listings data:', error));
         }).catch(error => reject('Error loading neighbourhoods data:', error));
     });
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> shelton
