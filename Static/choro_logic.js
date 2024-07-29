@@ -1,4 +1,4 @@
-// test-choro-logic.js
+// test-choro-logic.js 
 export function createChoroplethLayer(map) {
     return new Promise((resolve, reject) => {
         // Load the neighbourhood boundaries GeoJSON data
