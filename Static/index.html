@@ -24,29 +24,88 @@
 </head>
 
 <body>
-    <div id="map" style="height: 100vh; width: 100vw"></div>
+    <div id="map" style="height: 100vh; width: 100vw;"></div>
+
+    <!-- Side Panel -->
     <div id="sidePanel" class="sidepanel sidepanel-left" aria-label="side panel" aria-hidden="false">
         <div class="sidepanel-inner-wrapper">
             <nav class="sidepanel-tabs-wrapper" aria-label="sidepanel tab navigation">
                 <ul class="sidepanel-tabs">
+                    <!-- Tab 1 -->
                     <li class="sidepanel-tab">
                         <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
                                 <path fill-rule="evenodd" />
                             </svg>
+                            <span class="visually-hidden">Tab 1</span>
                         </a>
                     </li>
-                    <!-- Additional tabs go here -->
+                    <!-- Tab 2 -->
+                    <li class="sidepanel-tab">
+                        <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+                                <path fill-rule="evenodd" />
+                            </svg>
+                            <span class="visually-hidden">Tab 2</span>
+                        </a>
+                    </li>
+                    <!-- Tab 3 -->
+                    <li class="sidepanel-tab">
+                        <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+                                <path fill-rule="evenodd" />
+                            </svg>
+                            <span class="visually-hidden">Tab 3</span>
+                        </a>
+                    </li>
+                    <!-- Tab 4 -->
+                    <li class="sidepanel-tab">
+                        <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+                                <path fill-rule="evenodd" />
+                            </svg>
+                            <span class="visually-hidden">Tab 4</span>
+                        </a>
+                    </li>
+                    <!-- Tab 5 -->
+                    <li class="sidepanel-tab">
+                        <a href="#" class="sidebar-tab-link" role="tab" data-tab-link="tab-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor">
+                                <path fill-rule="evenodd" />
+                            </svg>
+                            <span class="visually-hidden">Tab 5</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
             <div class="sidepanel-content-wrapper">
                 <div class="sidepanel-content">
+                    <!-- Content for Tab 1 -->
                     <div class="sidepanel-tab-content" data-tab-content="tab-1">
-                        <!-- Container for the graph -->
-                        <div id="graphContainer"></div>
-                        <p>Content 1.</p>
+                        <div id="imageContainer1"></div>
+                            <!-- Image for Tab 1 -->
+                        <p><img src="./Images/avg_price_by_neighbourhood.png" alt="Average Price by Neighborhood" style="width: 100%; height: auto;" /></p>
                     </div>
-                    <!-- Additional tab content goes here -->
+                    <!-- Content for Tab 2 -->
+                    <div class="sidepanel-tab-content" data-tab-content="tab-2">
+                        <div id="imageContainer2"></div>
+                        <p>Content for Tab 2.</p>
+                    </div>
+                    <!-- Content for Tab 3 -->
+                    <div class="sidepanel-tab-content" data-tab-content="tab-3">
+                        <div id="imageContainer3"></div>
+                        <p>Content for Tab 3.</p>
+                    </div>
+                    <!-- Content for Tab 4 -->
+                    <div class="sidepanel-tab-content" data-tab-content="tab-4">
+                        <div id="imageContainer4"></div>
+                        <p>Content for Tab 4.</p>
+                    </div>
+                    <!-- Content for Tab 5 -->
+                    <div class="sidepanel-tab-content" data-tab-content="tab-5">
+                        <div id="imageContainer5"></div>
+                        <p>Content for Tab 5.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,7 +113,7 @@
             <button class="sidepanel-toggle-button" type="button" aria-label="toggle side panel"></button>
         </div>
     </div>
-    
+
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     
