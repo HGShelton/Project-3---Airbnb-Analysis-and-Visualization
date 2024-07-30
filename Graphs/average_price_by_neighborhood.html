@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bokeh Plot</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.4.0.min.js"></script>
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+  </head>
+  <body>
+    <div id="c106802c-407a-42f0-b73c-015520e27ded" data-root-id="p1054" style="display: contents;"></div>
+  
+    <script type="application/json" id="c90a3a18-4237-4a7d-9d89-f852eb5c0847">
+      {"2898e126-6442-477a-922d-f2299cb6b1fe":{"version":"3.4.0","title":"Bokeh Application","roots":[{"type":"object","name":"Figure","id":"p1054","attributes":{"width":800,"x_range":{"type":"object","name":"DataRange1d","id":"p1056"},"y_range":{"type":"object","name":"FactorRange","id":"p1064","attributes":{"factors":["Bay Village","Longwood Medical Area","Downtown","Back Bay","Leather District","South Boston Waterfront","Charlestown","Fenway","South End","Chinatown","West End","North End","Beacon Hill","South Boston","Jamaica Plain","East Boston","Roxbury","West Roxbury","Brighton","Dorchester","Allston","Mission Hill","Roslindale","Hyde Park","Mattapan"]}},"x_scale":{"type":"object","name":"LinearScale","id":"p1065"},"y_scale":{"type":"object","name":"CategoricalScale","id":"p1066"},"title":{"type":"object","name":"Title","id":"p1057","attributes":{"text":"Average Price by Neighborhood"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1083","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1051","attributes":{"selected":{"type":"object","name":"Selection","id":"p1052","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1053"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"AgAAAA4AAAAIAAAAAQAAAA0AAAAVAAAABQAAAAoAAAAWAAAABgAAABcAAAARAAAAAwAAABQAAAAMAAAACQAAABMAAAAYAAAABAAAAAcAAAAAAAAAEAAAABIAAAALAAAADwAAAA=="},"shape":[25],"dtype":"int32","order":"little"}],["neighbourhood",{"type":"ndarray","array":["Bay Village","Longwood Medical Area","Downtown","Back Bay","Leather District","South Boston Waterfront","Charlestown","Fenway","South End","Chinatown","West End","North End","Beacon Hill","South Boston","Jamaica Plain","East Boston","Roxbury","West Roxbury","Brighton","Dorchester","Allston","Mission Hill","Roslindale","Hyde Park","Mattapan"],"shape":[25],"dtype":"object","order":"little"}],["price",{"type":"ndarray","array":{"type":"bytes","data":"aZAGaZBef0BJkiRJkhR7QJ+UOQY42HVA+8g3GXEEdEAAAAAAACZzQKOLLrroknJAR27kRm6EckCafNmgyT9yQKiDOqiDSnFA4uHh4eFJcUAUO7ETO0FwQI2MjIyM7G9ANPFx3y3lbkAYhmEYhsVtQBX5rBtMYWpAn0n0nkk0aUDx8PDw8KxmQCbSA5Wzu2VA0IPVtI63ZEA/WQKb9mNjQFVVVVVV2WJAZmZmZmbOYkCCRCtsDmRiQF5OwcspeGBAjC666KKbXkA="},"shape":[25],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1084","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1085"}}},"glyph":{"type":"object","name":"HBar","id":"p1080","attributes":{"y":{"type":"field","field":"neighbourhood"},"height":{"type":"value","value":0.4},"right":{"type":"field","field":"price"},"line_color":{"type":"value","value":"green"},"fill_color":{"type":"value","value":"green"},"hatch_color":{"type":"value","value":"green"}}},"nonselection_glyph":{"type":"object","name":"HBar","id":"p1081","attributes":{"y":{"type":"field","field":"neighbourhood"},"height":{"type":"value","value":0.4},"right":{"type":"field","field":"price"},"line_color":{"type":"value","value":"green"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"value","value":"green"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"value","value":"green"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"HBar","id":"p1082","attributes":{"y":{"type":"field","field":"neighbourhood"},"height":{"type":"value","value":0.4},"right":{"type":"field","field":"price"},"line_color":{"type":"value","value":"green"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"value","value":"green"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"value","value":"green"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1063"},"toolbar_location":null,"left":[{"type":"object","name":"CategoricalAxis","id":"p1072","attributes":{"ticker":{"type":"object","name":"CategoricalTicker","id":"p1073"},"formatter":{"type":"object","name":"CategoricalTickFormatter","id":"p1074"},"axis_label":"Neighborhood","major_label_orientation":1.0,"major_label_policy":{"type":"object","name":"AllLabels","id":"p1075"}}}],"below":[{"type":"object","name":"LinearAxis","id":"p1067","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1068","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"BasicTickFormatter","id":"p1069"},"axis_label":"Average Price","major_label_policy":{"type":"object","name":"AllLabels","id":"p1070"}}}],"center":[{"type":"object","name":"Grid","id":"p1071","attributes":{"axis":{"id":"p1067"}}},{"type":"object","name":"Grid","id":"p1076","attributes":{"dimension":1,"axis":{"id":"p1072"}}}]}}]}}
+    </script>
+    <script type="text/javascript">
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('c90a3a18-4237-4a7d-9d89-f852eb5c0847').textContent;
+              const render_items = [{"docid":"2898e126-6442-477a-922d-f2299cb6b1fe","roots":{"p1054":"c106802c-407a-42f0-b73c-015520e27ded"},"root_ids":["p1054"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>
