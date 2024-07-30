@@ -1,4 +1,4 @@
-Airbnb Analysis and Visualization
+Airbnb Analysis and Visualization - Boston, Massachusetts
 
 Project Members: Nic Mallett, Zac Mason, Hannah Shelton
 
